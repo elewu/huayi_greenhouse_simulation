@@ -1,0 +1,14 @@
+<launch>
+	<!--param参数配置-->
+	<param name="kp_b" value="0.8" />
+	<param name="ki_b" value="0.02" />
+  <param name="ki_b" value="0.01" />
+
+	<param name="kp_s" value="2.4" />
+	<param name="ki_s" value="0.025" />
+  <param name="ki_s" value="0.02" />  
+	<!--param name="table_description" command="$(find xacro)/xacro.py $(find gazebo_worlds)/objects/table.urdf.xacro" /-->
+	<!--rosparam file="$(find robot_sim_demo)/config/xbot-u_control.yaml" command="load" /-->
+  <node name="laser_cloud" pkg="laser_cloud" type="laser_cloud" output="screen" aunch-prefix="xterm-egdb-exrun--args">
+	</node>
+</launch>

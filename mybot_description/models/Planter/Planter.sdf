@@ -1,0 +1,24 @@
+<?xml version='1.0'?>
+<sdf version="1.6">
+<model name="Planter">
+  <static>true</static>
+    <link name="link">
+      <visual name="visual">
+        <geometry>
+          <mesh>
+            <uri>models/Planter/meshes/Planter.dae</uri>
+          </mesh>
+        </geometry>
+      </visual>
+      <collision name="collision">
+        <geometry>
+          <mesh>
+            <uri>models/Planter/meshes/Planter.dae</uri>
+          </mesh>
+        </geometry>
+        <laser_retro>100</laser_retro>
+      </collision>
+    </link>
+  </model>
+</sdf>
+

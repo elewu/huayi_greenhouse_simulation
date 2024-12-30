@@ -1,0 +1,466 @@
+<?xml version="1.0"?>
+<robot name="greenbot_body" xmlns:xacro="http://www.ros.org/wiki/xacro">
+  <xacro:include filename="$(find mybot_description)/urdf/xacro/greenbot_gazebo.xacro"/> 
+
+  <link
+    name="base_footprint"/>
+    <joint name="base_footprint_joint" type="fixed">
+      <parent link="base_footprint"/>
+      <child link="base_link"/>
+    </joint>
+  <link
+    name="base_link">
+    <inertial>
+      <origin
+        xyz="-0.043417 0.0024724 0.071129"
+        rpy="0 0 0" />
+      <mass
+        value="7.6569" />
+      <inertia
+        ixx="0.043884"
+        ixy="3.0838E-06"
+        ixz="-3.9511E-06"
+        iyy="0.041592"
+        iyz="4.3111E-06"
+        izz="0.063811" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://mybot_description/meshes/base_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.79216 0.81961 0.93333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://mybot_description/meshes/base_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <link
+    name="balance_link">
+    <inertial>
+      <origin
+        xyz="-0.00277709946245636 0.00407916447503731 -0.0543481704807428"
+        rpy="0 0 0" />
+      <mass
+        value="0.112844858058193" />
+      <inertia
+        ixx="9.3786002353135E-05"
+        ixy="-7.35167471889747E-05"
+        ixz="2.02678624394008E-19"
+        iyy="0.000151721378229041"
+        iyz="1.30427518506278E-19"
+        izz="0.00016942785784933" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://mybot_description/meshes/balance_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.898039215686275 0.898039215686275 0.898039215686275 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://mybot_description/meshes/balance_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="balance_joint"
+    type="continuous">
+    <origin
+      xyz="-0.21852 0 0.065"
+      rpy="-1.5708 -0.5857 -1.5708" />
+    <parent
+      link="base_link" />
+    <child
+      link="balance_link" />
+    <axis
+      xyz="0 0 1" />
+  </joint>
+  <link
+    name="RBWheel_link1">
+    <inertial>
+      <origin
+        xyz="-0.02330678679761 -0.0703426030257691 1.06902760064337E-06"
+        rpy="0 0 0" />
+      <mass
+        value="0.0743932952543228" />
+      <inertia
+        ixx="3.46408126292656E-05"
+        ixy="-1.15272875234122E-05"
+        ixz="-6.23459980332951E-10"
+        iyy="2.65028393663644E-05"
+        iyz="-4.17675471685818E-10"
+        izz="4.30618362025959E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://mybot_description/meshes/RBWheel_link1.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://mybot_description/meshes/RBWheel_link1.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="RBWheel_joint1"
+    type="continuous">
+    <origin
+      xyz="0.089275 0.060778 -0.0645"
+      rpy="0 -1.4058 -2.5439" />
+    <parent
+      link="balance_link" />
+    <child
+      link="RBWheel_link1" />
+    <axis
+      xyz="0 1 0" />
+  </joint>
+  <link
+    name="RBWheel_link2">
+    <inertial>
+      <origin
+        xyz="1.45735863377183E-07 -8.99702079504294E-08 -2.99007039128441E-08"
+        rpy="0 0 0" />
+      <mass
+        value="0.0683776787449737" />
+      <inertia
+        ixx="3.56634978702883E-05"
+        ixy="1.79638666446478E-10"
+        ixz="9.84065808485834E-11"
+        iyy="3.5661991782124E-05"
+        iyz="-6.08505546774888E-11"
+        izz="6.44237387733269E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://mybot_description/meshes/RBWheel_link2.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://mybot_description/meshes/RBWheel_link2.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="RBWheel_joint2"
+    type="continuous">
+    <origin
+      xyz="-0.0325 -0.086 0"
+      rpy="0 0 0.024042" />
+    <parent
+      link="RBWheel_link1" />
+    <child
+      link="RBWheel_link2" />
+    <axis
+      xyz="0 0 -1" />
+  </joint>
+  <link
+    name="LBWheel_link1">
+    <inertial>
+      <origin
+        xyz="-0.0233053972057622 -0.0703417306452363 4.99291867711582E-08"
+        rpy="0 0 0" />
+      <mass
+        value="0.0743953665207165" />
+      <inertia
+        ixx="3.46407813993639E-05"
+        ixy="-1.15271717771201E-05"
+        ixz="-6.31017319588512E-10"
+        iyy="2.65027220238866E-05"
+        iyz="-3.99044256957268E-10"
+        izz="4.30615676862407E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://mybot_description/meshes/LBWheel_link1.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://mybot_description/meshes/LBWheel_link1.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="LBWheel_joint1"
+    type="continuous">
+    <origin
+      xyz="-0.089275 -0.060778 -0.0645"
+      rpy="3.1416 -1.3702 0.59772" />
+    <parent
+      link="balance_link" />
+    <child
+      link="LBWheel_link1" />
+    <axis
+      xyz="0 1 0" />
+  </joint>
+  <link
+    name="LBWheel_link2">
+    <inertial>
+      <origin
+        xyz="1.42227500998793E-07 -8.70874772296304E-08 -3.21116762902474E-08"
+        rpy="0 0 0" />
+      <mass
+        value="0.0683776707499719" />
+      <inertia
+        ixx="3.56634789492795E-05"
+        ixy="1.84112677264919E-10"
+        ixz="9.58458030321829E-11"
+        iyy="3.56619878601843E-05"
+        iyz="-5.93894026113785E-11"
+        izz="6.44237167569635E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://mybot_description/meshes/LBWheel_link2.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://mybot_description/meshes/LBWheel_link2.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="LBWheel_joint2"
+    type="continuous">
+    <origin
+      xyz="-0.0325 -0.086 0"
+      rpy="0 0 0.024042" />
+    <parent
+      link="LBWheel_link1" />
+    <child
+      link="LBWheel_link2" />
+    <axis
+      xyz="0 0 1" />
+  </joint>
+  <link
+    name="RFWheel_link">
+    <inertial>
+      <origin
+        xyz="-0.00037060018953855 -0.113682716338772 -0.000431230158977558"
+        rpy="0 0 0" />
+      <mass
+        value="0.770460652439593" />
+      <inertia
+        ixx="0.00277534134519605"
+        ixy="-5.30905879383413E-06"
+        ixz="-7.30685844875631E-07"
+        iyy="0.00510831453522825"
+        iyz="-1.04983081197141E-06"
+        izz="0.00277735609543981" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://mybot_description/meshes/RFWheel_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 0.945098039215686 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://mybot_description/meshes/RFWheel_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="RFWheel_joint"
+    type="continuous">
+    <origin
+      xyz="0.088228 -0.07915 0.0465"
+      rpy="0.0054766 0 3.14004" />
+    <parent
+      link="base_link" />
+    <child
+      link="RFWheel_link" />
+    <axis
+      xyz="0.0023786 -1 0" />
+  </joint>
+  <link
+    name="LFWheel_link">
+    <inertial>
+      <origin
+        xyz="1.58510692871566E-05 0.113884930118912 -1.14881103920883E-05"
+        rpy="0 0 0" />
+      <mass
+        value="0.770439146291288" />
+      <inertia
+        ixx="0.00277716373218402"
+        ixy="-2.62838653299963E-06"
+        ixz="-9.30963183597173E-07"
+        iyy="0.00510825029173895"
+        iyz="-1.31290438961751E-05"
+        izz="0.00277559806191767" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://mybot_description/meshes/LFWheel_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 0.945098039215686 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://mybot_description/meshes/LFWheel_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="LFWheel_joint"
+    type="continuous">
+    <origin
+      xyz="0.088228 0.07915 0.0465"
+      rpy="0.0054766 0 -0.00156" />
+    <parent
+      link="base_link" />
+    <child
+      link="LFWheel_link" />
+    <axis
+      xyz="-0.0015512 0.99998 -0.0054752" />
+  </joint>
+  <transmission name="LFWheel_joint_trans">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="LFWheel_joint" />
+    <actuator name="LFWheel_motor_joint">
+        <hardwareInterface>VelocityJointInterface</hardwareInterface>
+        <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+  <transmission name="RFWheel_joint_trans">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="RFWheel_joint" />
+    <actuator name="RFWheel_motor_joint">
+        <hardwareInterface>VelocityJointInterface</hardwareInterface>
+        <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+  <gazebo>
+      <plugin name="differential_drive_controller" filename="libgazebo_ros_diff_drive.so">
+          <rosDebugLevel>Debug</rosDebugLevel>
+          <publishWheelTF>false</publishWheelTF>
+          <publishOdomTF>true</publishOdomTF>
+          <robotNamespace>/</robotNamespace>
+          <publishTf>1</publishTf>
+          <publishWheelJointState>false</publishWheelJointState>
+          <alwaysOn>true</alwaysOn>
+          <updateRate>50.0</updateRate>
+          <legacyMode>false</legacyMode>
+          <leftJoint>LFWheel_joint</leftJoint>
+          <rightJoint>RFWheel_joint</rightJoint>
+          <wheelSeparation>0.37</wheelSeparation>
+          <wheelDiameter>0.22</wheelDiameter>
+          <broadcastTF>1</broadcastTF>
+          <wheelTorque>30</wheelTorque>
+          <wheelAcceleration>1.8</wheelAcceleration>
+          <commandTopic>cmd_vel</commandTopic>
+          <odometryFrame>odom</odometryFrame> 
+          <odometryTopic>odom</odometryTopic> 
+          <robotBaseFrame>base_footprint</robotBaseFrame>
+      </plugin>
+  </gazebo> 
+  <greenbot_body/>
+  
+</robot>
+
