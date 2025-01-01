@@ -19,9 +19,9 @@
         	<arg name="use_sim_time" value="$(arg use_sim_time)"/>
         	<arg name="headless" value="$(arg headless)"/>
             <!--5排，每排就一个草莓，只供快速测试-->
-		    <!--arg name="world_name" value="$(find mybot_description)/world/strawberry_factory_fast.world"/>--> 
+		    <arg name="world_name" value="$(find mybot_description)/world/strawberry_factory_fast.world"/> 
             <!--5排，2排完整草莓-->
-            <arg name="world_name" value="$(find mybot_description)/world/strawberry_factory.world"/>
+            <!-- <arg name="world_name" value="$(find mybot_description)/world/strawberry_factory.world"/> -->
             <!--两堵空墙-->
             <!-- <arg name="world_name" value="$(find mybot_description)/world/wall1.world"/> -->
     </include>

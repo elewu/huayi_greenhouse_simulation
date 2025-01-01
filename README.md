@@ -14,7 +14,18 @@
 ```
 
 2.  编译工程
-3.  启动仿真```roslaunch mybot_description display_mybot.launch```
+3.  启动仿真
+
+```bash
+roslaunch mybot_description display_mybot.launch
+```
+
+4. keyboard
+
+```bash
+rosrun turtlesim turtle_teleop_key /turtle1/cmd_vel:=/cmd_vel
+```
+
 
 #### 说明
 1. mybot_control那部分没用到，只用了teleop_key键盘遥控
