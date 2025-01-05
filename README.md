@@ -27,6 +27,19 @@ rosrun turtlesim turtle_teleop_key /turtle1/cmd_vel:=/cmd_vel
 ```
 
 
+
+
+### env setup
+
+```bash
+# ros related
+pip install rospkg rospy catkin_tools
+pip install defusedxml
+pip install empy
+
+
+```
+
 #### 说明
 1. mybot_control那部分没用到，只用了teleop_key键盘遥控
 2. lidar三个：均为10HZ，其中lidar3平扫，lidar1前视，lidar2后视，参数依照锐驰智光Lakibeam 1s设置。话题名：
