@@ -1,16 +1,24 @@
+
+import time
+
 import rospy
 import numpy as np  # Import numpy to use deg2rad
 from geometry_msgs.msg import Twist, PoseStamped
 from nav_msgs.msg import Odometry
 from tf.transformations import euler_from_quaternion
 
+from apep.gazebo_state import GazeboState
 from apep.vel_controller import DifferentialRobotVelocityController
+
 
 
 
 class DifferentialRobotController:
     def __init__(self):
         rospy.init_node('differential_robot_controller')
+
+        self.gazebo_state = GazeboState()
+        self.gazebo_state.unpause()
 
         # Publisher for twist commands
         self.cmd_vel_pub = rospy.Publisher('/cmd_vel', Twist, queue_size=10)
@@ -22,6 +30,9 @@ class DifferentialRobotController:
         self.current_pose = None
         self.target_position = None  # (target_x, target_y, target_yaw)
 
+        time.sleep(1)
+        self.gazebo_state.pause()
+
         freq = 10
         self.controller = DifferentialRobotVelocityController(rospy, 1 / freq)
 
@@ -29,10 +40,12 @@ class DifferentialRobotController:
         self.loop_rate = rospy.Rate(freq)  # 10 Hz
 
     def odom_callback(self, msg):
+        print(' pose here')
         self.current_pose = msg.pose.pose
 
     def goal_callback(self, msg):
         # Extract target position from PoseStamped message
+        print(' goal here')
         target_yaw = euler_from_quaternion((msg.pose.orientation.x, 
                                              msg.pose.orientation.y, 
                                              msg.pose.orientation.z, 
@@ -41,8 +54,10 @@ class DifferentialRobotController:
 
 
     def run_step(self):
+        print(f'                 [run step] {self.current_pose}, {self.target_position}')
         if self.current_pose is None or self.target_position is None:
             return
+        print('controller run step')
         
         # current_time = rospy.Time.now()
         # dt = (current_time - self.last_time).to_sec()
@@ -74,12 +89,18 @@ class DifferentialRobotController:
         cmd.angular.z = control.angular_z
 
         self.cmd_vel_pub.publish(cmd)
+
+        self.gazebo_state.unpause()
+        self.gazebo_state.pause()
         return
 
     def run(self):
         while not rospy.is_shutdown():
             self.run_step()
-            self.loop_rate.sleep()
+
+            # self.gazebo_state.unpause()
+            # self.gazebo_state.pause()
+            # self.loop_rate.sleep()
 
 if __name__ == '__main__':
     controller = DifferentialRobotController()

@@ -1,0 +1,58 @@
+<?xml version="1.0"?>
+<launch>
+    <!-- 设置launch文件的参数 -->
+    <arg name="paused" default="false"/>
+    <arg name="use_sim_time" default="true"/>
+    <arg name="gui" default="false"/>
+    <arg name="headless" default="true"/>
+    <arg name="debug" default="false"/>
+    <!--设置模型底盘的位置 注意：x_pos引用时不能为负数，占用符不能为负，所以我直接写在node参数里了，记得去那边改-->
+    <arg name="x_pos" default="-7.5"/>
+    <arg name="y_pos" default="1.15"/>
+    <arg name="z_pos" default="0.2"/>
+
+    <!--运行gazebo仿真环境-->
+	<include file="$(find gazebo_ros)/launch/empty_world.launch">
+        	<arg name="debug" value="$(arg debug)" />
+        	<arg name="gui" value="$(arg gui)" />
+        	<arg name="paused" value="$(arg paused)"/>
+        	<arg name="use_sim_time" value="$(arg use_sim_time)"/>
+        	<arg name="headless" value="$(arg headless)"/>
+            <!--5排，每排就一个草莓，只供快速测试-->
+		    <!-- <arg name="world_name" value="$(find mybot_description)/world/strawberry_factory_fast.world"/>  -->
+            <!--5排，2排完整草莓-->
+            <!-- <arg name="world_name" value="$(find mybot_description)/world/strawberry_factory.world"/> -->
+            <!--两堵空墙-->
+            <!-- <arg name="world_name" value="$(find mybot_description)/world/wall1.world"/> -->
+    </include>
+    
+    <!-- 加载机器人模型描述参数 -->
+    <arg name="model" default="$(find xacro)/xacro --inorder '$(find mybot_description)/urdf/xacro/greenbot_with_sensor.xacro'" />
+    <param name="robot_description" command="$(arg model)" />
+
+    <!-- 运行robot_state_publisher节点，发布tf  -->
+    <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" >
+        <param name="publish_frequency" type="double" value="50.0" />
+    </node>
+
+    <!-- 运行joint_state_publisher节点，发布机器人的关节状态  -->
+    <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" >
+        <param name="use_gui" value="false"/>
+        <param name="rate" value="50"/>
+    </node>
+
+    <!-- 在gazebo中加载机器人模型 -->
+    <!-- <node name="urdf_spawner" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen"
+          args="-urdf -model greenbot -param robot_description -x $(arg x_pos) -y $(arg y_pos) -z $(arg z_pos)"/>  -->
+    <node name="urdf_spawner" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen"
+          args="-urdf -model greenbot -param robot_description -x $(arg x_pos) -y $(arg y_pos) -z $(arg z_pos)"/> 
+
+    <!-- 运行rviz可视化界面  args="-d $(find mybot_description)/rviz/mybot_urdf.rviz" -->
+    <!-- <node name="rviz" pkg="rviz" type="rviz" args="-d $(find mybot_description)/rviz/wall_urdf.rviz" /> -->
+
+    <!-- uwb的锚点显示，锚点为world坐标系，插件内部设置 -->
+    <node pkg="tf" type="static_transform_publisher" name="odom_to_world_tf_publisher"
+            args="0 0 0 0 0 0 odom world 100"/>
+
+</launch>
+

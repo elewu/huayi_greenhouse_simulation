@@ -36,9 +36,12 @@ rosrun turtlesim turtle_teleop_key /turtle1/cmd_vel:=/cmd_vel
 pip install rospkg rospy catkin_tools
 pip install defusedxml
 pip install empy
-
+pip install netifaces
 
 ```
+
+
+
 
 #### 说明
 1. mybot_control那部分没用到，只用了teleop_key键盘遥控
@@ -46,3 +49,15 @@ pip install empy
 - /laser1_scan
 - /laser2_scan
 - /laser3_scan
+
+
+
+
+
+
+# train in empty world
+
+```bash
+roslaunch mybot_description empty_world.launch
+```
+

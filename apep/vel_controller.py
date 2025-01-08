@@ -45,7 +45,7 @@ class DifferentialRobotVelocityController:
             desired_angular_z = np.sign(desired_angular_z) * self.max_angular_velocity
 
 
-        self.logger.loginfo(f"Error (x, y, theta): [{delta_x:.3f}, {delta_y:.3f}, {np.rad2deg(delta_theta):.3f}], Command (vx, vy, wz): [{desired_linear_x:.3f}, {desired_linear_y:.3f}, {desired_angular_z:.3f}]")
+        # self.logger.loginfo(f"Error (x, y, theta): [{delta_x:.3f}, {delta_y:.3f}, {np.rad2deg(delta_theta):.3f}], Command (vx, vy, wz): [{desired_linear_x:.3f}, {desired_linear_y:.3f}, {desired_angular_z:.3f}]")
         return rldev.Data(linear_x=desired_linear_x, linear_y=desired_linear_y, angular_z=desired_angular_z)
 
 
