@@ -16,6 +16,7 @@ def run_one_episode(i_episode, config, writer, env, method):
         next_state, reward, done, _ = env.step(action_data.squeeze(0).numpy())
         experience = rllib.template.Experience(
                 state=torch.from_numpy(state).float().unsqueeze(0),
+                next_state=torch.from_numpy(next_state).float().unsqueeze(0),
                 action_data=action_data, reward=reward, done=done)
         method.store(experience)
 
@@ -36,20 +37,25 @@ def init(config):
 
     ### env param
     from apep.state_space import StateSpaceGoalReach
-    from apep.action_space import ActionSpaceDeltaPose
+    from apep.action_space import ActionSpaceDeltaPose, ActionSpaceVelocity
     from apep.reward_func import RewardFuncDistance
 
-    state_space = StateSpaceGoalReach()
-    action_space = ActionSpaceDeltaPose()
-    reward_func = RewardFuncDistance()
+    # state_space = StateSpaceGoalReach()
+    # action_space = ActionSpaceDeltaPose()
+    # reward_func = RewardFuncDistance()
+    # max_steps = 50
 
-    env = EnvGazebo(state_space=state_space, action_space=action_space, reward_func=reward_func)
+    state_space = StateSpaceGoalReach()
+    action_space = ActionSpaceVelocity()
+    reward_func = RewardFuncDistance()
+    max_steps = 100
+
+    env = EnvGazebo(state_space=state_space, action_space=action_space, reward_func=reward_func, max_steps=max_steps)
 
     config.set('env_name', "GazeboReachGoal")
     config.set('dim_state', env.state_space.dim_state)
     config.set('dim_action', env.action_space.dim_action)
     config.set('continuous_action_space', env.action_space.continuous)
-    config.set('buffer_size', 500)
 
     ### method param
     method_name = config.method.upper()
@@ -78,6 +84,10 @@ def init(config):
             config.set('net_ac', rllib.ppg.ActorCriticContinuous)
         else:
             config.set('net_ac', rllib.ppg.ActorCriticDiscrete)
+    
+    elif method_name == 'SAC':
+        from rllib.sac import SAC as Method
+
     else:
         raise NotImplementedError('Not support this method.')
 
@@ -104,11 +114,13 @@ def generate_args():
     argparser.add_argument('--render', action='store_true', help='render the env (default: False)')
 
     ### method params
-    argparser.add_argument('--batch-size', default=32, type=int, help='[Method Param]')
+    argparser.add_argument('--batch-size', default=128, type=int, help='[Method Param]')
     argparser.add_argument('--buffer-size', default=2000, type=int, help='[Method Param]')
 
-    argparser.add_argument('--weight-value', default=0.005, type=float, help='[Method Param] available: PPO')
+    argparser.add_argument('--weight-value', default=0.5, type=float, help='[Method Param] available: PPO')
     argparser.add_argument('--weight-entropy', default=0.001, type=float, help='[Method Param] available: PPO')
+
+    argparser.add_argument('--gamma', default=0.9, type=float, help='[Method Param] available: PPO')
 
     args = argparser.parse_args()
     return args

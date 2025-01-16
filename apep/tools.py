@@ -50,6 +50,39 @@ def local_to_global(poses, pose0):
 
 
 
+
+
+def state_global_to_local(state, pose0):
+    """
+        state: x, y, heading, vx, vy
+    """
+
+    if isinstance(state, np.ndarray):
+        framework = np
+        cat_func = functools.partial(np.concatenate, axis=-1)
+        clone_func = np.copy
+    elif isinstance(state, torch.Tensor):
+        framework = torch
+        cat_func = functools.partial(torch.cat, dim=-1)
+        clone_func = torch.clone
+    else:
+        raise NotImplementedError
+
+    zeros = framework.zeros_like(pose0[..., [0]])
+
+    poses_local = global_to_local(state[..., [0, 1, 2]], pose0)
+    velocity_local = global_to_local(state[..., [3, 4, 2]], cat_func([zeros, zeros, pose0[..., [2]]]))
+
+    state_local = clone_func(state)
+    state_local[..., [0, 1, 2]] = poses_local
+    state_local[..., [3, 4]] = velocity_local[..., :-1]
+    return state_local
+
+
+
+
+
+
 def pi2pi(theta):
     if isinstance(theta, np.ndarray) or isinstance(theta, float):
         return pi2pi_numpy(theta)
