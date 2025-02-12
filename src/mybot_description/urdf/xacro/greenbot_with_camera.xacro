@@ -1,0 +1,227 @@
+<?xml version="1.0"?>
+<robot name="greenbot_body" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+    <xacro:include filename="$(find mybot_description)/urdf/xacro/greenbot_body.xacro" />
+    <xacro:include filename="$(find mybot_description)/urdf/xacro/sensors/hokuyo_laser1.xacro" />
+    <xacro:include filename="$(find mybot_description)/urdf/xacro/sensors/hokuyo_laser2.xacro" />
+    <xacro:include filename="$(find mybot_description)/urdf/xacro/sensors/hokuyo_laser3.xacro" />
+    <xacro:include filename="$(find mybot_description)/urdf/xacro/sensors/imu.xacro" />
+    <xacro:include filename="$(find mybot_description)/urdf/xacro/sensors/camera.xacro" />
+
+    <xacro:property name="laser1_offset_x" value="0.16902" />
+    <xacro:property name="laser1_offset_y" value="0." />
+    <xacro:property name="laser1_offset_z" value="0.054" />
+
+    <xacro:property name="laser2_offset_x" value="-0.33546" />
+    <xacro:property name="laser2_offset_y" value="0." />
+    <xacro:property name="laser2_offset_z" value="0.0471" />
+
+    <xacro:property name="laser3_offset_x" value="0.26" />
+    <xacro:property name="laser3_offset_y" value="0." />
+    <xacro:property name="laser3_offset_z" value="0.17" />
+
+    <xacro:property name="imu_offset_x" value="0.16902" />
+    <xacro:property name="imu_offset_y" value="0." />
+    <xacro:property name="imu_offset_z" value="-0.005" />
+
+    <joint name="hokuyo_laser1_joint" type="fixed">
+        <origin xyz="${laser1_offset_x} ${laser1_offset_y} ${laser1_offset_z}" rpy="0 0 0" />
+        <parent link="base_link"/>
+        <child link="hokuyo_laser1_link"/>
+    </joint>
+    <xacro:hokuyo_laser1/>
+
+    <joint name="hokuyo_laser2_joint" type="fixed">
+        <origin xyz="${laser2_offset_x} ${laser2_offset_y} ${laser2_offset_z}" rpy="-3.1416 0 3.1416" />
+        <parent link="base_link"/>
+        <child link="hokuyo_laser2_link"/>
+    </joint>
+    <xacro:hokuyo_laser2/>
+
+    <joint name="hokuyo_laser3_joint" type="fixed">
+        <origin xyz="${laser3_offset_x} ${laser3_offset_y} ${laser3_offset_z}" rpy="0 1.5706 0" />
+        <parent link="base_link"/>
+        <child link="hokuyo_laser3_link"/>
+    </joint>
+    <xacro:hokuyo_laser3/>
+
+    <!-- Camera -->
+    <!-- <camera prefix="camera"/> -->
+
+    <joint name="front_camera_joint" type="fixed">
+        <origin xyz="0.2 0 0.3" rpy="0 0 0"/>
+        <parent link="base_link"/>
+        <child link="front_camera_link"/>
+    </joint>
+    <xacro:camera prefix="front_camera"/>
+
+    <joint name="back_camera_joint" type="fixed">
+        <origin xyz="-0.2 0 0.3" rpy="0 0 3.1416"/>
+        <parent link="base_link"/>
+        <child link="back_camera_link"/>
+    </joint>
+    <xacro:camera prefix="back_camera"/>
+
+    <!-- imu -->
+    <joint name="imu_joint" type="fixed">
+        <origin xyz="${imu_offset_x} ${imu_offset_y} ${imu_offset_z}" rpy="0 0 0" />
+        <parent link="base_link"/>
+        <child link="imu_link"/>
+    </joint>
+    <xacro:imu/>
+
+    <!-- uwb -->
+    <xacro:arg name="right_id" default="0" />
+    <xacro:arg name="left_id" default="1" />
+    <xacro:arg name="mid_id" default="2" />
+    <xacro:property name="right" value="$(arg right_id)" />
+    <xacro:property name="left" value="$(arg left_id)" />
+    <xacro:property name="mid" value="$(arg mid_id)" />
+
+    <link name="right_tag">
+        <inertial>
+            <mass value="0.1" />
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0" />
+        </inertial>
+
+        <visual>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <geometry>
+                <mesh filename="package://mybot_description/meshes/Decawave.stl" scale="0.5 0.5 0.5"/>
+            </geometry>
+            <material name="">
+                <color rgba="0.294117647058824 0.294117647058824 0.294117647058824 1" />
+            </material>
+        </visual>
+    </link>
+
+    <joint name="right_tag_joint" type="fixed">
+        <origin xyz="-0.12 -0.14 0.1" rpy="0 0 0"/>
+        <parent link="base_link"/>
+        <child link="right_tag"/>
+    </joint>
+
+    <gazebo reference="right_tag_joint">
+        <preserveFixedJoint>true</preserveFixedJoint>
+    </gazebo>
+
+    <gazebo reference="right_tag">
+        <material>Gazebo/DarkGrey</material>
+    </gazebo>
+
+    <link name="left_tag">
+        <inertial>
+            <mass value="0.1" />
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0" />
+        </inertial>
+
+        <visual>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <geometry>
+                <mesh filename="package://mybot_description/meshes/Decawave.stl" scale="0.5 0.5 0.5"/>
+            </geometry>
+            <material name="">
+                <color rgba="0.294117647058824 0.294117647058824 0.294117647058824 1" />
+            </material>
+        </visual>
+    </link>
+
+    <joint name="left_tag_joint" type="fixed">
+        <origin xyz="-0.12 0.14 0.1" rpy="0 0 3.1416"/>
+        <parent link="base_link"/>
+        <child link="left_tag"/>
+    </joint>
+
+    <gazebo reference="left_tag_joint">
+        <preserveFixedJoint>true</preserveFixedJoint>
+    </gazebo>
+
+    <gazebo reference="left_tag">
+        <material>Gazebo/DarkGrey</material>
+    </gazebo>
+
+    <link name="mid_tag">
+        <inertial>
+            <mass value="0.1" />
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0" />
+        </inertial>
+
+        <visual>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <geometry>
+                <mesh filename="package://mybot_description/meshes/Decawave.stl" scale="0.5 0.5 0.5"/>
+            </geometry>
+            <material name="">
+                <color rgba="0.294117647058824 0.294117647058824 0.294117647058824 1" />
+            </material>
+        </visual>
+    </link>
+
+    <joint name="mid_tag_joint" type="fixed">
+        <origin xyz="0 0 0.21" rpy="-1.5706 0 -1.5706"/>
+        <parent link="base_link"/>
+        <child link="mid_tag"/>
+    </joint>
+
+    <gazebo reference="mid_tag_joint">
+        <preserveFixedJoint>true</preserveFixedJoint>
+    </gazebo>
+
+    <gazebo reference="mid_tag">
+        <material>Gazebo/DarkGrey</material>
+    </gazebo>
+
+    <gazebo>
+        <plugin name='libgtec_uwb_plugin' filename='libgtec_uwb_plugin.so'>
+            <update_rate>10</update_rate>
+            <frequency>3.9936e9</frequency>
+            <power>-14.3</power>
+            <rx_gain>2</rx_gain>
+            <tag_link>right_tag</tag_link>
+            <anchor_prefix>uwb_anchor</anchor_prefix>
+            <tag_id>${right}</tag_id>
+            <noise type='gaussian'>
+                <mean>0</mean>
+                <stddev>0.05</stddev>
+            </noise>
+        </plugin>
+    </gazebo>
+
+    <gazebo>
+        <plugin name='libgtec_uwb_plugin' filename='libgtec_uwb_plugin.so'>
+            <update_rate>10</update_rate>
+            <frequency>3.9936e9</frequency>
+            <power>-14.3</power>
+            <rx_gain>2</rx_gain>
+            <tag_link>left_tag</tag_link>
+            <anchor_prefix>uwb_anchor</anchor_prefix>
+            <tag_id>${left}</tag_id>
+            <noise type='gaussian'>
+                <mean>0</mean>
+                <stddev>0.05</stddev>
+            </noise>
+        </plugin>
+    </gazebo>
+
+    <gazebo>
+        <plugin name='libgtec_uwb_plugin' filename='libgtec_uwb_plugin.so'>
+            <update_rate>10</update_rate>
+            <frequency>3.9936e9</frequency>
+            <power>-14.3</power>
+            <rx_gain>2</rx_gain>
+            <tag_link>mid_tag</tag_link>
+            <anchor_prefix>uwb_anchor</anchor_prefix>
+            <tag_id>${mid}</tag_id>
+            <noise type='gaussian'>
+                <mean>0</mean>
+                <stddev>0.05</stddev>
+            </noise>
+        </plugin>
+    </gazebo>
+
+    <greenbot_body/>
+
+</robot>
