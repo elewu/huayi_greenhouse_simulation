@@ -13,7 +13,7 @@ def run_one_episode(i_episode, config, writer, env, method):
     while not done:
         # action_data = rldev.Data(action=env.action_space.sample())
         action_data = method.select_action( torch.from_numpy(state).unsqueeze(0).float() )
-        next_state, reward, done, _ = env.step(action_data.squeeze(0).numpy())
+        next_state, reward, done, info = env.step(action_data.squeeze(0).numpy())
         experience = rllib.template.Experience(
                 state=torch.from_numpy(state).float().unsqueeze(0),
                 next_state=torch.from_numpy(next_state).float().unsqueeze(0),
@@ -26,6 +26,8 @@ def run_one_episode(i_episode, config, writer, env, method):
     method.update_parameters()
     
     writer.add_scalar('env/reward', running_reward, i_episode)
+    for metric_name, metric_value in info['metric'].items():
+        writer.add_scalar(f'env/metric_{metric_name}', metric_value, i_episode)
     return
 
 
@@ -39,18 +41,22 @@ def init(config):
     from apep.state_space import StateSpaceGoalReach
     from apep.action_space import ActionSpaceDeltaPose, ActionSpaceVelocity
     from apep.reward_func import RewardFuncDistance
+    from apep.metric_func import MetricFuncDistanceToGoal
 
     # state_space = StateSpaceGoalReach()
     # action_space = ActionSpaceDeltaPose()
     # reward_func = RewardFuncDistance()
-    # max_steps = 50
+    # metric_func = MetricFuncDistanceToGoal()
+    # max_steps = 70
 
     state_space = StateSpaceGoalReach()
     action_space = ActionSpaceVelocity()
     reward_func = RewardFuncDistance()
-    max_steps = 100
+    metric_func = MetricFuncDistanceToGoal()
+    # max_steps = 100
+    max_steps = 70
 
-    env = EnvGazebo(state_space=state_space, action_space=action_space, reward_func=reward_func, max_steps=max_steps)
+    env = EnvGazebo(state_space=state_space, action_space=action_space, reward_func=reward_func, metric_func=metric_func, max_steps=max_steps)
 
     config.set('env_name', "GazeboReachGoal")
     config.set('dim_state', env.state_space.dim_state)

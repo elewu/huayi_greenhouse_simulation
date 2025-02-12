@@ -27,13 +27,13 @@ class BoxSpace(object):
 
 
 class ActionSpaceDeltaPose(BoxSpace):
-    def __init__(self, max_x=3, max_y=1, max_yaw=np.pi):
+    def __init__(self, max_x=6, max_y=6, max_yaw=np.pi):
         super().__init__(low=np.array([-1.0, -1.0, -1.0]), high=np.array([1.0, 1.0, 1.0]), shape=(3,), dtype=np.float32)
     
         self.continuous = True
         self.max_action = np.array([max_x, max_y, max_yaw], dtype=np.float32)
 
-        self.decision_frequency = 1
+        self.decision_frequency = 10
         self.control_frequency = 10
         self.decision_dt = 1 / self.decision_frequency
         self.control_dt = 1 / self.control_frequency

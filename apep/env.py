@@ -23,10 +23,11 @@ from apep.vel_controller import DifferentialRobotVelocityController
 
 
 class EnvGazebo:
-    def __init__(self, state_space, action_space, reward_func, max_steps=50):
+    def __init__(self, state_space, action_space, reward_func, metric_func, max_steps=50):
         self.state_space = state_space
         self.action_space = action_space
         self.reward_func = reward_func
+        self.metric_func = metric_func
 
         ### counters
         self.step_reset = -1
@@ -133,6 +134,10 @@ class EnvGazebo:
         reward = self.reward_func.compute(self, None, action)
         done = self.time_step > self.max_steps
         info = {}
+
+        metric = self.metric_func.compute(self, None, action)
+        info.update(metric=metric)
+
         print('action: ', action)
         print('\n')
         return next_state, reward, done, info

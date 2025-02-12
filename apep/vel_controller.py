@@ -21,8 +21,8 @@ class DifferentialRobotVelocityController:
         self.angular_pid = PIDController(kp=4.0, ki=0.0, kd=0.5)    # For angular Z
 
         # Maximum velocity constraints
-        self.max_linear_velocity = 1.0    # Max linear velocity (m/s)
-        self.max_angular_velocity = np.deg2rad(20)  # Max angular velocity (rad/s)
+        self.max_linear_velocity = 5.0    # Max linear velocity (m/s)
+        self.max_angular_velocity = np.deg2rad(120)  # Max angular velocity (rad/s)
 
 
     def run_step(self, current_pose, target_pose):

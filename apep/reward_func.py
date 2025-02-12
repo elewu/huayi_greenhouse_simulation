@@ -30,7 +30,7 @@ class RewardFuncDistance(RewardFunc):
         reward_progress = progress * 50
 
         local_goal = global_to_local(env.goal_pose, env.current_pose)
-        reward_goal = int(np.linalg.norm(local_goal) < 1) * 1
+        reward_goal = int(np.linalg.norm(local_goal[..., :2]) < 1) * 1
 
         # reward = reward_reachability + reward_goal *0.1
         reward = reward_progress + reward_goal
