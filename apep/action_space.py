@@ -41,7 +41,8 @@ class ActionSpaceDeltaPose(BoxSpace):
         return
 
     def execute(self, env, action):
-        env.target_pose = local_to_global(env.current_pose, action)
+        # env.target_pose = local_to_global(env.current_pose, action)
+        env.target_pose = local_to_global(action, env.current_pose)
 
         for _ in range(int(self.control_frequency / self.decision_frequency)):
             control = self.controller.run_step(env.current_pose, env.target_pose)

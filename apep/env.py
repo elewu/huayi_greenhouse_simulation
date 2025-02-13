@@ -10,7 +10,7 @@ import numpy as np
 import rospy
 import roslaunch
 from geometry_msgs.msg import Twist, Pose, PoseStamped
-from gazebo_msgs.msg import ModelStates
+from gazebo_msgs.msg import ModelStates, ContactsState
 from nav_msgs.msg import Odometry
 from tf.transformations import euler_from_quaternion, quaternion_from_euler
 
@@ -23,11 +23,12 @@ from apep.vel_controller import DifferentialRobotVelocityController
 
 
 class EnvGazebo:
-    def __init__(self, state_space, action_space, reward_func, metric_func, max_steps=50):
+    def __init__(self, state_space, action_space, reward_func, metric_func, scenario_random_func, max_steps=50, launch_file=None):
         self.state_space = state_space
         self.action_space = action_space
         self.reward_func = reward_func
         self.metric_func = metric_func
+        self.scenario_random_func = scenario_random_func
 
         ### counters
         self.step_reset = -1
@@ -42,7 +43,10 @@ class EnvGazebo:
         ### ros related
         rospy.init_node('env_gazebo')
 
-        self.launch_file = os.path.join(os.path.dirname(importlib.util.find_spec('apep').origin), '../src/mybot_description/launch/empty_world.launch')
+        if launch_file is None:
+            self.launch_file = os.path.join(os.path.dirname(importlib.util.find_spec('apep').origin), '../src/mybot_description/launch/empty_world.launch')
+        else:
+            self.launch_file = launch_file
         self.start_gazebo()
 
         self.gazebo_state = GazeboState()
@@ -58,11 +62,13 @@ class EnvGazebo:
         self.current_state = None
         self.current_pose = None
         self.target_pose = None  # (target_x, target_y, target_yaw)
+        self.is_collision = False
 
         self.goal_pose_pub = rospy.Publisher('/goal_pose', PoseStamped, queue_size=1, latch=True)
 
         rospy.Subscriber('/gazebo/model_states', ModelStates, self.model_state_callback)
         rospy.Subscriber('/odom', Odometry, self.odom_callback)
+        rospy.Subscriber('/bumper', ContactsState, self.collision_callback)
         # rospy.Subscriber('/move_base_simple/goal', PoseStamped, self.goal_callback)
         time.sleep(1)
 
@@ -89,11 +95,17 @@ class EnvGazebo:
         ### reset simulation
         self.gazebo_state.reset()
 
+        self.scenario_random_func.reset()
         ### spawn model
+
+
         robot_description = rospy.get_param('robot_description')
         model_name = 'greenbot'
         initial_pose = Pose()
+        initial_pose.position.x = self.scenario_random_func.current_pose[0]
+        initial_pose.position.y = self.scenario_random_func.current_pose[1]
         initial_pose.position.z = 0.2
+        initial_pose.orientation.x, initial_pose.orientation.y, initial_pose.orientation.z, initial_pose.orientation.w = quaternion_from_euler(0, 0, self.scenario_random_func.current_pose[2])
         self.gazebo_state.spawn_model(model_name, robot_description, initial_pose)
         self.cmd_vel_pub.publish(Twist())
 
@@ -102,9 +114,10 @@ class EnvGazebo:
 
         ### random set goal
         # radius = random.uniform(10, 50)
-        radius = 5
-        angle = random.uniform(-np.pi/3, np.pi/3) if random.random() < 0.5 else random.uniform(2*np.pi/3, 4*np.pi/3)
-        self.goal_pose = np.asarray([np.cos(angle) * radius, np.sin(angle) * radius, angle])
+        # radius = 5
+        # angle = random.uniform(-np.pi/3, np.pi/3) if random.random() < 0.5 else random.uniform(2*np.pi/3, 4*np.pi/3)
+        # self.goal_pose = np.asarray([np.cos(angle) * radius, np.sin(angle) * radius, angle])
+        self.goal_pose = self.scenario_random_func.goal_pose
         self.publish_goal_pose(self.goal_pose)
         
         return self.state_space.pack(self)
@@ -132,7 +145,7 @@ class EnvGazebo:
         
         next_state = self.state_space.pack(self)
         reward = self.reward_func.compute(self, None, action)
-        done = self.time_step > self.max_steps
+        done = self.time_step > self.max_steps or self.is_collision
         info = {}
 
         metric = self.metric_func.compute(self, None, action)
@@ -191,6 +204,18 @@ class EnvGazebo:
                                              msg.pose.orientation.z, 
                                              msg.pose.orientation.w))[2]  # Get yaw
         self.target_pose = np.asarray([msg.pose.position.x, msg.pose.position.y, target_yaw])
+
+
+    def collision_callback(self, msg):
+        if msg.states:  # Non-empty means collision happened
+            self.is_collision = True
+            rospy.loginfo("Collision detected!")
+            for state in msg.states:
+                rospy.loginfo("Collision between: {} and {}".format(state.collision1_name, state.collision2_name))
+        else:
+            self.is_collision = False
+        return
+
 
 
 

@@ -53,11 +53,33 @@ pip install netifaces
 
 
 
+# add contact sensor
+
+https://blog.csdn.net/qq_45701501/article/details/107334215
 
 
-# train in empty world
+# train rl control
 
 ```bash
-roslaunch mybot_description empty_world.launch
+python scripts/train.py -d look -m sac
 ```
+
+
+
+
+# train pep
+
+1. collect data
+
+```bash
+python scripts/collect_data.py
+```
+
+2. process data
+
+```bash
+
+```
+
+
 
