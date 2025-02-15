@@ -1,0 +1,107 @@
+_target_: apep.model.apep.Planner
+_convert_: 'all'
+
+model_params:
+    trainer_cls: apep.trainer.ppo.TrainerPPO
+    _target_: rldev.BaseData
+    _convert_: 'all'
+
+    ckpt_dir: ${oc.env:HOME}/github/zdk/metric-oriented-planning/results/train/pep_g_rl/2024-11-03-23:41:08--dataset-nuplan--new_route_v8-train150k--batch64m2--rl-reward-ade_col_map--mode-12-lane_v2-0.2--token-speed--anchor-False-False-False--score-True-False-False-v1-0.0-True--softT-False--policy-False--look/checkpoints
+    ckpt_num: 31
+
+
+    context_encoder:
+        NUM_OF_ATTN_NEIGHBORS: 16
+        NUM_INPUT_ATTR_AGENT: 10
+        
+        NUM_CHANNEL_IN_MLP_AGENT: 256
+        NUM_CHANNEL_IN_MLP_MAP: 64
+        NUM_LAYER_IN_MLP_AGENT: 3
+        NUM_LAYER_IN_MLP_MAP: 5
+        NUM_LAYER_IN_PRE_MLP_MAP: 3
+
+        D_MODEL: 256
+        NUM_ATTN_LAYERS: 3
+        NUM_ATTN_HEAD: 8 
+        DROPOUT_OF_ATTN: 0.1
+
+        USE_LOCAL_ATTN: True
+    
+    ego_vehicle_parameters: null
+    # max_action: 1.0
+
+    # num_modes: 12
+    detach_ar: false
+    # use_l1: True
+    il_opt: false
+    rl_opt: true
+
+    # simple_map: false
+    # remove_history: false
+    # state_dropout: 0.0
+
+    # mix_train: true
+    # mix_train_ratio: 0.5
+    # mix_adaptive: false
+    # adaptive_threshold: 0.0
+    
+    # prob_type: 'max-max'
+    # side_task: False
+
+    gamma: 0.1
+    lamda: 0.9
+    weight_value: 3.0
+    ppo_repeat: 0
+
+    # reverse_rl_mode: false
+
+    reward_func: prog_fap_bound
+    # clip_route: false
+
+    # fuse_sa: false
+    # fuse_mode: false  ## should be false, todo@ delete
+    # mode_type: lane_v2  ## [single, lane, both, pad]
+    # token_type: speed
+    # mode_dropout: 0.2
+
+    # policy_fuse_kv: false
+
+    independent_gaussian: true
+    normalize_mean: true
+    normalize_std: true
+    separate_decoder: false
+    
+    vehicle_dynamics: delta
+
+    # scorer_sepe_encoder: true
+    # scorer_dropout: 0.0
+    # score_traj: false
+    # scorer_encoder: 'v1'
+    # scorer_side_task: true
+    # scorer_fuse_kv: false
+
+    # weight_anchor: 1.0
+    # use_anchor_prob: false
+    # use_anchor_mix: false
+    # random_mode: false
+
+
+    # clip_info: true
+    # soft_target: false
+
+    # finetune: false
+
+    interpolate_scale: 1
+
+    # quality_loss: none  # col_map
+    random_sample: 0
+    
+    ### tmp
+    encoder_type: 'v1'
+    # pointnet_type: 'v2'  # [v1, v2]
+    
+
+
+defaults:
+  - feature_params: hdmap
+  - target_params: default

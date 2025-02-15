@@ -151,8 +151,8 @@ class EnvGazebo:
         metric = self.metric_func.compute(self, None, action)
         info.update(metric=metric)
 
-        print('action: ', action)
-        print('\n')
+        # print('action: ', action)
+        # print('\n')
         return next_state, reward, done, info
 
 

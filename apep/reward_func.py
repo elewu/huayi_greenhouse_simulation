@@ -34,7 +34,7 @@ class RewardFuncDistance(RewardFunc):
 
         # reward = reward_reachability + reward_goal *0.1
         reward = reward_progress + reward_goal
-        print('reward progress: ', reward_progress, ' reward goal: ', reward_goal)
+        # print('reward progress: ', reward_progress, ' reward goal: ', reward_goal)
 
         ### post
         self.last_pose = env.current_pose

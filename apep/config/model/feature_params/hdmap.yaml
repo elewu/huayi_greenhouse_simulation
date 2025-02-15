@@ -1,0 +1,45 @@
+_target_: apep.model.template.MotionPlanningTransformerFeatureParams
+_convert_: 'all'
+agent_features: [VEHICLE, PEDESTRIAN, BICYCLE]
+past_trajectory_sampling:
+    _target_: apep.utils.trajectory_sampling.TrajectorySampling
+    _convert_: 'all'
+    # num_poses: 2
+    interval_length: 1.0
+    time_horizon: ${max_history_time}
+ego_dimension: 3
+agent_dimension: 8
+max_agents: 32
+
+map_features: [ROADBLOCK, ROADBLOCK_CONNECTOR, INTERSECTION, STOP_LINE, CROSSWALK, ROUTE_LANES, LANE, LANE_LEFT_BOUNDARY, LANE_RIGHT_BOUNDARY, LANE_CONNECTOR, LANE_CONNECTOR_LEFT_BOUNDARY, LANE_CONNECTOR_RIGHT_BOUNDARY]
+# map_features: [INTERSECTION, STOP_LINE, CROSSWALK, ROUTE_LANES, LANE, LANE_LEFT_BOUNDARY, LANE_RIGHT_BOUNDARY, LANE_CONNECTOR, LANE_CONNECTOR_LEFT_BOUNDARY, LANE_CONNECTOR_RIGHT_BOUNDARY]
+
+total_max_points: 20
+feature_dimension: 8
+
+
+max_elements:
+    ROADBLOCK: 20
+    ROADBLOCK_CONNECTOR: 30
+    INTERSECTION: 6
+    STOP_LINE: 6
+    CROSSWALK: 6
+    ROUTE_LANES: 10
+
+    LANE: 40
+    LANE_LEFT_BOUNDARY: 40
+    LANE_RIGHT_BOUNDARY: 40
+
+    LANE_CONNECTOR: 60
+    LANE_CONNECTOR_LEFT_BOUNDARY: 60
+    LANE_CONNECTOR_RIGHT_BOUNDARY: 60
+
+
+
+max_points: 20
+
+vector_set_map_feature_radius: 100    # [m] The query radius scope relative to the current ego-pose.
+interpolation_method: linear
+disable_map: False
+disable_agents: False
+

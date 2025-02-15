@@ -1,0 +1,23 @@
+# @package _global_
+dataset_name: greenhouse
+
+val_data_types: [val]
+
+# data_dir: ${oc.env:NUPLAN_DATA_ROOT}/../cache/${cache_name}
+data_dir: ${oc.env:HOME}/codespace/agri/huayi_greenhouse_simulation/results/GazeboCollectData/2025-02-13-12:43:35----Nothing/processed
+
+max_history_time: 2  ## second
+
+simple_map_types: [LANE]
+
+map_info:
+  num_rows: 5
+  row_interval: 0.9
+
+  num_pillar: 5
+  cell_length: 1.0
+  num_cells: 4
+
+  pallet_width: 0.3
+
+  resolution: 0.5 # [m]

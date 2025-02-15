@@ -13,7 +13,10 @@ from apep.data_collector import DataCollector
 
 
 def run_one_episode(config, env: EnvGazebo, data_collector: DataCollector):
+    data_collector.reset()
     env.reset()
+    env.gazebo_state.unpause(1)
+    env.gazebo_state.pause()
     done = False
     save_data = {}
     while not done:

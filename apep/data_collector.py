@@ -16,17 +16,7 @@ class DataCollector:
         self.laser3_topic = f'{namespace}/laser3_scan'
 
         # Initialize dictionary to store data
-        self.data_dict = {
-            'timestamp': None,
-            'pose': None,
-            'linear_velocity': None,
-            'angular_velocity': None,
-            'front_camera_image': None,
-            'back_camera_image': None,
-            'laser1_scan': None,
-            'laser2_scan': None,
-            'laser3_scan': None
-        }
+        self.reset()
 
         # Subscribers for collecting data
         self.odom_sub = message_filters.Subscriber(self.odom_topic, Odometry)
@@ -44,12 +34,23 @@ class DataCollector:
             slop=0.1)
         ts.registerCallback(self.callback)
 
-    def extract_timestamp(self, header: Header):
-        return header.stamp.secs + header.stamp.nsecs / 1e9
+    def reset(self):
+        self.data_dict = {
+            'timestamp': None,
+            'pose': None,
+            'linear_velocity': None,
+            'angular_velocity': None,
+            'front_camera_image': None,
+            'back_camera_image': None,
+            'laser1_scan': None,
+            'laser2_scan': None,
+            'laser3_scan': None
+        }
+
 
     def callback(self, odom, front_image, back_image, laser1, laser2, laser3):
         # Extract and store the latest timestamp
-        # self.data_dict['timestamp'] = odom.header.stamp.to_sec()
+        self.data_dict['timestamp'] = odom.header.stamp.to_sec()
 
         # Convert messages and store into the data_dict
         

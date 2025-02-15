@@ -2,16 +2,18 @@ import rldev
 
 import os
 import pickle
-import multiprocessing
+import tqdm
 from multiprocessing import Pool
 import numpy as np
 import matplotlib.pyplot as plt
 import argparse
 
-def process_time_step_data(data):
-    # Convert incoming data dict to rldev.Data type, if applicable
-    processed_data = data
-    return processed_data
+
+def save_processed_data(output_dir, time_step, processed_data):
+    file_path = os.path.join(output_dir, f'time_step_{time_step}.pkl')
+    with open(file_path, 'wb') as f:
+        pickle.dump(processed_data, f)
+
 
 def visualize_data(axs, data):
     # Extract data components
@@ -24,7 +26,11 @@ def visualize_data(axs, data):
     # fig, axs = plt.subplots(nrows=2, ncols=2, figsize=(12, 10))
 
     # Show front camera image
-    axs[0, 0].imshow(front_img)
+    try:
+        axs[0, 0].imshow(front_img)
+    except:
+        import pdb; pdb.set_trace()
+        pass
     axs[0, 0].set_title("Front Camera Image")
     axs[0, 0].axis('off')
 
@@ -48,56 +54,73 @@ def visualize_data(axs, data):
     # plt.show()
     plt.pause(0.5)  # Pause for 0.5 seconds
 
-def save_processed_data(output_dir, time_step, processed_data):
-    file_path = os.path.join(output_dir, f'time_step_{time_step}.pkl')
-    with open(file_path, 'wb') as f:
-        pickle.dump(processed_data, f)
 
-def process_worker(file_path, output_dir):
+def get_sub_dict(original_dict, keys):
+    """Extracts a sub-dictionary containing only the specified keys."""
+    return {key: original_dict[key] for key in keys if key in original_dict}
+
+
+def process_worker(file_path, output_dir, vis=False):
+    base_dir, data_type = os.path.split(output_dir)
+    extra_dir = os.path.join(base_dir, 'extra/sensors', data_type)
+    os.makedirs(extra_dir, exist_ok=True)
+
     with open(file_path, 'rb') as f:
         sequential_data = pickle.load(f)
     
-    import pdb; pdb.set_trace()
-    # fig, axs = plt.subplots(nrows=2, ncols=2, figsize=(12, 10))
+    if vis:
+        fig, axs = plt.subplots(nrows=2, ncols=2, figsize=(12, 10))
 
-    # for time_step, data in sequential_data.items():
-    #     processed_data = process_time_step_data(data)
+    for time_step, data in sequential_data.items():
+        if any([v is None for v in data.values()]):
+            continue
+        save_path = os.path.join(output_dir, f'{os.path.splitext(os.path.basename(file_path))[0]}_step_{time_step}.pkl')
+        sensor_save_path =os.path.join(extra_dir, f'{os.path.splitext(os.path.basename(file_path))[0]}_step_{time_step}.pkl')
+        data_pose = get_sub_dict(data, ['pose', 'linear_velocity', 'angular_velocity'])
+        data_sensor = get_sub_dict(data, ['front_camera_image', 'back_camera_image', 'laser1_scan', 'laser2_scan', 'laser3_scan'])
 
-    #     for ax in axs.flatten():
-    #         ax.clear()
-    #     visualize_data(axs, rldev.Data(**processed_data))
-    #     # Uncomment this line if you want to save each processed time step
-    #     # save_processed_data(output_dir, time_step, processed_data)
-    # plt.close(fig)
+        with open(save_path, 'wb') as f:
+            pickle.dump(data_pose, f)
+        with open(sensor_save_path, 'wb') as f:
+            pickle.dump(data_sensor, f)
+
+        if vis:
+            for ax in axs.flatten():
+                ax.clear()
+            visualize_data(axs, rldev.Data(**data))
+    if vis:
+        plt.close(fig)
+    return
 
 
-def process_data(args):
-    if not os.path.exists(args.output_directory):
-        os.makedirs(args.output_directory)
+def process_data(pickle_files, output_directory):
+    if not os.path.exists(output_directory):
+        os.makedirs(output_directory)
     
-    pickle_files = [os.path.join(args.input_directory, f) for f in os.listdir(args.input_directory) if f.endswith('.pkl')]
-    
-    with open(pickle_files[0], 'rb') as f:
-        sequential_data1 = pickle.load(f)
-    with open(pickle_files[1], 'rb') as f:
-        sequential_data2 = pickle.load(f)
-    import pdb; pdb.set_trace()
-
-
     if args.num_workers > 0:
         with Pool(args.num_workers) as pool:
-            pool.starmap(process_worker, [(file, args.output_directory) for file in pickle_files])
+            # Use tqdm to wrap the iterable for displaying a progress bar
+            list(tqdm.tqdm(pool.starmap(process_worker, [(file, output_directory) for file in pickle_files]), total=len(pickle_files)))
     else:
         for file in pickle_files:
-            process_worker(file, args.output_directory)
+            process_worker(file, output_directory)
+    return
+
+
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Process and save data at each time step individually.')
-    
-    parser.add_argument('--input_directory', type=str, default=os.path.expanduser('~/codespace/agri/huayi_greenhouse_simulation/results/GazeboCollectData/2025-02-12-19:13:17----Nothing/output'), help='Path to the input directory containing pickle files.')
-    parser.add_argument('--output_directory', type=str, default=os.path.expanduser('~/codespace/agri/huayi_greenhouse_simulation/results/GazeboCollectData/2025-02-12-19:13:17----Nothing/processed'), help='Path to the output directory where processed files will be saved.')
+    parser.add_argument('--input_directory', type=str, default=os.path.expanduser('~/codespace/agri/huayi_greenhouse_simulation/results/GazeboCollectData/2025-02-13-12:43:35----Nothing/output'), help='Path to the input directory containing pickle files.')
+    parser.add_argument('--output_directory', type=str, default=os.path.expanduser('~/codespace/agri/huayi_greenhouse_simulation/results/GazeboCollectData/2025-02-13-12:43:35----Nothing/processed'), help='Path to the output directory where processed files will be saved.')
     parser.add_argument('--num_workers', type=int, default=16, help='Number of worker processes for parallel processing (set to 0 for debugging).')
-    
     args = parser.parse_args()
     
-    process_data(args)
+    pickle_files = [os.path.join(args.input_directory, f) for f in os.listdir(args.input_directory) if f.endswith('.pkl')]
+    pickle_files.sort(key=lambda x: int(os.path.splitext(os.path.basename(x))[0].split('_')[-1]))
+
+    train_files = pickle_files[:-10]
+    val_files = pickle_files[-10:]
+
+    process_data(train_files, os.path.join(args.output_directory, 'train'))
+    process_data(val_files, os.path.join(args.output_directory, 'val'))

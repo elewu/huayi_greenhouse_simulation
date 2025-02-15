@@ -21,6 +21,6 @@ class StateSpaceGoalReach:
         goal_local = global_to_local(env.goal_pose, env.current_pose)
         state_local = state_global_to_local(env.current_state, env.current_state[..., [0,1,2]])
         state = np.concatenate([state_local, goal_local])
-        print('state: ', state)
+        # print('state: ', state)
         return state.astype(np.float32)
 

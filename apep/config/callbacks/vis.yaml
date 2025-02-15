@@ -1,0 +1,13 @@
+vis_callback:
+  _target_: apep.callbacks.vis.VisCallback
+  _convert_: 'all'
+
+  dataset_name: ${dataset_name}
+  output_dir: ${output_dir}
+  vis_mode: simple
+  # vehicle_parameters: ${ego_vehicle_parameters}
+  images_per_tile: ${data_loader.params.batch_size}  # number of images per row
+  num_train_tiles: 1  # number of rows of training images
+  num_val_tiles: 1  # number of rows of validation images
+
+

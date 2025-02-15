@@ -1,0 +1,91 @@
+hydra:
+  run:
+    dir: ${output_dir}
+  output_subdir: ${output_dir}/code/hydra           # Store hydra's config breakdown here for debugging
+  searchpath:                                       # Only <exp_dir> in these paths are discoverable
+    - file://.
+    # - pkg://nuplan.planning.script.config.training
+    # - pkg://nuplan.planning.script.config.common
+    # - pkg://nuplan.planning.script.experiments      # Put experiments configs in script/experiments/<exp_dir>
+
+defaults:
+  - dataset: greenhouse
+  - data_loader: default
+  - model: null
+  # - default_experiment
+  # - default_common
+
+  # Optimizer settings
+  - optimizer: adamw  # [adam, adamw] supported optimizers
+  - lr_scheduler: null  # [one_cycle_lr] supported lr_schedulers
+  - warm_up_lr_scheduler: null  # [linear_warm_up, constant_warm_up] supported warm up lr schedulers
+
+  # Callbacks
+  - callbacks: default_callbacks
+  
+  # Objectives and metrics
+  # - data_augmentation: null
+  # - data_augmentation_scheduler: null  # [default_augmentation_schedulers, stepwise_augmentation_probability_scheduler, stepwise_noise_parameter_scheduler] supported data augmentation schedulers
+  # - scenario_type_weights: default_scenario_type_weights
+
+  # Benchmark metrics
+  # - ego_controller: simple_perfect_tracking_controller
+  # - simulation_time_controller: step_simulation_time_controller
+  # - observation: box_observation   # idm_agents_observation
+  # - trajectory_metric: closed_loop
+  # - metric_aggregator:
+      # - closed_loop_nonreactive_agents_weighted_average
+
+
+date_format: '%Y-%m-%d-%H:%M:%S'
+current_time: ${now:${date_format}}
+
+base_dir: results
+description: ''
+output_dir: ${base_dir}/${current_time}--dataset-${dataset_name}--${data_builder}-${train_split}--batch${data_loader.params.batch_size}m${num_gpus}${description}
+
+# training
+launcher: null
+num_gpus: 1
+py_func: train
+max_epochs: 100
+seed: 10
+save_ckpt_ratio: 1
+
+# dataset
+job_name: ???
+dataset_name: ???
+val_data_types: ???
+data_dir: ???
+
+data_builder: default
+train_split: train
+cache_name: ${data_builder}/${train_split}
+
+
+# model
+ckpt_dir: ${model.model_params.ckpt_dir}
+ckpt_num: ${model.model_params.ckpt_num}
+
+
+
+load_train_set: false
+
+# Benchmark metrics
+simulation_history_buffer_duration: 2.0  # [s] The look back duration to initialize the simulation history buffer with
+aggregator_save_path: ${output_dir}
+
+
+use_lr_scheduler: True
+find_unused_parameters: False
+
+
+pretrain_model_checkpoint_path: null
+# test only
+# model_checkpoint_path: null
+
+
+
+logger_level: info                                  # Level of logger
+logger_format_string: null                          # Logger format string, set null to use the default format string
+
