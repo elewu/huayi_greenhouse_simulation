@@ -55,7 +55,7 @@ model_params:
 
     # reverse_rl_mode: false
 
-    reward_func: prog_fap_bound
+    reward_func: prog_fap_bound_center
     # clip_route: false
 
     # fuse_sa: false
@@ -71,7 +71,7 @@ model_params:
     normalize_std: true
     separate_decoder: false
     
-    vehicle_dynamics: delta
+    vehicle_dynamics: unicycle # [delta, unicycle]
 
     # scorer_sepe_encoder: true
     # scorer_dropout: 0.0

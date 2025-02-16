@@ -203,7 +203,7 @@ if __name__ == '__main__':
     job_name = args_dict['model']
 
     if job_name == 'apep':
-        args_dict['description'] = '--reward-${model.model_params.reward_func}' + args_dict['description']
+        args_dict['description'] = '--reward-${model.model_params.reward_func}--dyna-${model.model_params.vehicle_dynamics}' + args_dict['description']
 
 
     if 'py_func' in args_dict and args_dict['py_func'] == 'val':

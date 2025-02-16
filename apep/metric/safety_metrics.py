@@ -39,6 +39,7 @@ class FinalApproachesGoal(AbstractMetric):
         goal = input_data.goal[..., None, :]
         final_pose = output_data.trajectory.data[..., -1, :]
         dist = (final_pose - goal)[..., :2].norm(dim=-1)
+        # dist = (final_pose - goal).norm(dim=-1)
         zeros = torch.zeros_like(dist).unsqueeze(-1).repeat_interleave(T-1, dim=-1)
         return torch.cat([zeros, -dist.unsqueeze(-1)], dim=-1)
 
@@ -61,4 +62,18 @@ class InBound(AbstractMetric):
         in_bound = (y > bound_min) & (y < bound_max)
         return in_bound.to(torch.float32) -1
 
+
+class NearCenter(AbstractMetric):
+    def __init__(self, cfg, name='near_center', interpolate_scale=1, pad=False) -> None:
+        super().__init__(name=name)
+
+        self.interpolate_scale = interpolate_scale
+        self.pad = pad
+    
+    def compute(self, input_data, output_data, targets) -> torch.Tensor:
+        # aussume map is horizontal
+
+        bound = input_data.map_polylines[..., 0,1].mean(dim=-1)[..., None,None]
+        y = output_data.trajectory.data[..., ModelOutputDim.y]
+        return -(y - bound).abs()
 

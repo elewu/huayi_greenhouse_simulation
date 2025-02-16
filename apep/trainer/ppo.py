@@ -205,6 +205,8 @@ class TrainerPPO(TrainerIL):
                 reward = quality_metrics.final_approaches_goal *0.1
             elif reward_func == 'bound':
                 reward = quality_metrics.in_bound *10
+            elif reward_func == 'center':
+                reward = quality_metrics.near_center
 
             else:
                 raise ValueError(f'Unknown reward function: {reward_func}')

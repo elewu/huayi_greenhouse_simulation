@@ -58,6 +58,7 @@ class Planner(ModelWrapper):
             safety_metrics.ProgressTowardsGoal(meta_cfg.cfg),
             safety_metrics.FinalApproachesGoal(meta_cfg.cfg),
             safety_metrics.InBound(meta_cfg.cfg, interpolate_scale=model_params.interpolate_scale, pad=False),
+            safety_metrics.NearCenter(meta_cfg.cfg, interpolate_scale=model_params.interpolate_scale, pad=False),
             # safety_metrics.meanEgoCollisionRate(meta_cfg.cfg, interpolate_scale=self.interpolate_scale, pad=False),
             # safety_metrics.meanEgoOutMapBoundary(meta_cfg.cfg, interpolate_scale=self.interpolate_scale, pad=False),
             # # safety_metrics.meanEgoRouteAlign(meta_cfg.cfg),
@@ -83,7 +84,7 @@ class Planner(ModelWrapper):
         self.gamma = model_params.gamma
         self.lamda = model_params.lamda
 
-        self.policy = GaussianPolicyPoseSpace(model_params, feature_params, target_params, meta_cfg)
+        self.policy = GaussianPolicy(model_params, feature_params, target_params, meta_cfg)
         return
 
 
@@ -205,7 +206,7 @@ class Planner(ModelWrapper):
 
 
 
-class GaussianPolicyPoseSpace(nn.Module):
+class GaussianPolicy(nn.Module):
     def __init__(
         self,
         model_params: rldev.BaseData,
@@ -224,6 +225,8 @@ class GaussianPolicyPoseSpace(nn.Module):
 
         if self.vehicle_dynamics == 'delta':
             dynamics_func = IdentityModel
+        elif self.vehicle_dynamics == 'unicycle':
+            dynamics_func = UnicycleModel
         else:
             raise RuntimeError(f'Known func: {self.vehicle_dynamics}')
         self.dynamics = dynamics_func(model_params.ego_vehicle_parameters, target_params.future_trajectory_sampling)
@@ -342,6 +345,7 @@ class GaussianPolicyPoseSpace(nn.Module):
 
 
 
+
 class Encoder(nn.Module):
     def __init__(self, model_params):
         super().__init__()
@@ -443,5 +447,49 @@ class IdentityModel(nn.Module):
 
 
 
+
+
+class UnicycleModel(nn.Module):
+    StateDim = ModelOutputDim
+    class ActionDim:
+        v = 0
+        w = 1
+        dim = 2
+
+    max_action = torch.tensor([1, 1], dtype=torch.float32)
+    max_action_inner = torch.tensor([2, 1], dtype=torch.float32)
+
+    def __init__(self, vehicle_parameters, future_trajectory_sampling):
+        super().__init__()
+
+        self.vehicle_parameters = vehicle_parameters
+        self.max_omega = 1
+        self.min_velocity = 0.0
+        self.max_velocity = 22.0 # 22.0
+
+        self.dt = 0.1
+        self.delta_t = future_trajectory_sampling.interval_length
+        self.num_iters = int(self.delta_t / self.dt)
+        return
+
+
+    def forward(self, state, action):
+        action = action.clamp(-1, 1) * self.max_action_inner[None,None].to(action)
+        v = action[..., self.ActionDim.v]
+        w = action[..., self.ActionDim.w]
+
+        x = state[..., self.StateDim.x]
+        y = state[..., self.StateDim.y]
+        heading = state[..., self.StateDim.heading]
+
+        for _ in range(self.num_iters):
+            next_x = x + self.dt *v * torch.cos(heading)
+            next_y = y + self.dt *v * torch.sin(heading)
+            next_heading = rldev.pi2pi_tensor(heading + self.dt * w)
+
+            x, y, heading = next_x, next_y, next_heading
+
+        next_state = torch.stack([next_x, next_y, next_heading], dim=-1)
+        return next_state
 
 
