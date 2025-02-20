@@ -55,7 +55,7 @@ model_params:
 
     # reverse_rl_mode: false
 
-    reward_func: prog_fap_bound_center
+    reward_func: prog_fap_bound
     # clip_route: false
 
     # fuse_sa: false
